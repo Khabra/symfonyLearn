@@ -81,4 +81,16 @@ final class CourseController extends AbstractController
 
         return $this->redirectToRoute('app_course_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[isGranted('ROLE_USER')]
+    #[Route('/add_student/{id}<\d+>', name:'app_course_add_student', methods: ['GET', 'POST'])]
+    public function addStudent(Request $request, Course $course, EntityManagerInterface $entityManager, CourseRepository $courseRepository): Response
+    {
+        $currentUser = $this->getUser();
+        $course->addUser($currentUser);
+        $entityManager->persist($course);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_course_index', [], Response::HTTP_SEE_OTHER);
+    }
 }
