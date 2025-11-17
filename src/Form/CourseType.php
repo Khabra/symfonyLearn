@@ -16,11 +16,6 @@ class CourseType extends AbstractType
         $builder
             ->add('name')
             ->add('description')
-            ->add('users', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-                'multiple' => true,
-            ])
         ;
     }
 

@@ -32,6 +32,7 @@ final class CourseController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $course -> addUser($this->getUser());
             $entityManager->persist($course);
             $entityManager->flush();
 
