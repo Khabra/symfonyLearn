@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<h1 style="text-align:center; margin-bottom:20px;">
+  Mapa Interactivo · Campus San Joaquín
+</h1>
+
+<div id="info-box"
+  style="
+    width:100%;
+    background:#f4f4f4;
+    border-radius:8px;
+    padding:12px;
+    margin-bottom:25px;
+    font-size:18px;">
+  Haz clic en un edificio para ver su ID…
+</div>
+
+<div style="width:100%; max-width:1600px; margin:auto;">
+  <div class="svg-wrapper">
+    {% include 'map/CampusFrame.svg' %}
+  </div>
+</div>
+
+
+<script>
+// Seleccionamos el grupo principal real del mapa
+const svgRoot = document.querySelector('#CampusFrame');
+
+// Verificación
+if (!svgRoot) {
+  console.error("NO se encontró el grupo <g id='CampusFrame'> dentro del SVG");
+}
+
+// Obtener SOLO elementos con ID dentro del grupo CampusFrame
+const buildings = svgRoot.querySelectorAll('[id]');
+
+// Filtramos cualquier ID que no corresponda a edificio (como el rectángulo decorativo)
+const filteredBuildings = Array.from(buildings).filter(el => 
+  el.tagName !== 'rect' && el.id !== 'CampusFrame'
+);
+
+filteredBuildings.forEach(el => {
+  // Guardar fill original
+  const computedFill = window.getComputedStyle(el).fill;
+  el.dataset.originalFill = computedFill;
+
+  // Hover
+  el.addEventListener("mouseover", () => {
+    el.style.cursor = "pointer";
+    el.style.transition = "0.2s ease";
+    el.style.fill = "rgba(255, 255, 0, 0.45)";
+    el.style.stroke = "yellow";
+    el.style.strokeWidth = "2";
+  });
+
+  // Mouseout
+  el.addEventListener("mouseout", () => {
+    el.style.fill = el.dataset.originalFill;
+    el.style.stroke = "";
+    el.style.strokeWidth = "";
+  });
+
+  // Click: mostrar ID del edificio
+  el.addEventListener("click", () => {
+    document.getElementById("info-box").innerHTML =
+      `<strong>Edificio seleccionado:</strong> ${el.id}`;
+  });
+});
+</script>
+
+{% endblock %}

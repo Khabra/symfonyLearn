@@ -49,4 +49,24 @@ class CourseRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+
+    public function notByUser($student): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere(':val NOT MEMBER OF c.users')
+            ->setParameter('val', $student)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function filterByUser($user): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere(':val MEMBER OF c.users')
+            ->setParameter('val', $user)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

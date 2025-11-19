@@ -3,7 +3,7 @@
 {% block title %}Course index{% endblock %}
 
 {% block body %}
-    <h1 class="h1-white"> Course index </h1>
+    <h1 class="h1-white">Course index</h1>
 
     <table class="table">
         <thead>
@@ -21,7 +21,11 @@
                 <td>{{ course.name }}</td>
                 <td>{{ course.description }}</td>
                 <td>
-                    <a href="{{ path('app_course_add_student', {'id': course.id}) }}">Inscribirse</a>
+                  {% if rol == "ROLE_TEACHER" %}
+                    <a href="{{ path('app_material_new', {'course_id': course.id}) }}"> Agregar material </a>
+                    <a href="{{ path('app_course_edit', {'id': course.id}) }}"> editar curso </a>
+                    <a href="{{ path('app_course_delete', {'id': course.id}) }}">Eliminar Curso</a>
+                  {% endif %}
                 </td>
             </tr>
         {% else %}
@@ -31,8 +35,7 @@
         {% endfor %}
         </tbody>
     </table>
-
-    {% if (rol == "ROLE_TEACHER") %}
-        <a href="{{ path('app_course_new') }}">Create new</a>
+    {% if rol == "ROLE_TEACHER" %}
+      <a href="{{ path('app_course_new') }}">Create new</a>
     {% endif %}
 {% endblock %}

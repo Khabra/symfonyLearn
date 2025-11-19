@@ -27,9 +27,16 @@ class Course
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'courses')]
     private Collection $users;
 
+    /**
+     * @var Collection<int, Material>
+     */
+    #[ORM\OneToMany(targetEntity: Material::class, mappedBy: 'course', orphanRemoval: true)]
+    private Collection $materials;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->materials = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -81,6 +88,36 @@ class Course
     public function removeUser(User $user): static
     {
         $this->users->removeElement($user);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Material>
+     */
+    public function getMaterials(): Collection
+    {
+        return $this->materials;
+    }
+
+    public function addMaterial(Material $material): static
+    {
+        if (!$this->materials->contains($material)) {
+            $this->materials->add($material);
+            $material->setCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMaterial(Material $material): static
+    {
+        if ($this->materials->removeElement($material)) {
+            // set the owning side to null (unless already changed)
+            if ($material->getCourse() === $this) {
+                $material->setCourse(null);
+            }
+        }
 
         return $this;
     }

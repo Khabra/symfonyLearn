@@ -49,6 +49,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Course::class, mappedBy: 'users')]
     private Collection $courses;
 
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Seat $seat = null;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -201,6 +204,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->courses->removeElement($course)) {
             $course->removeUser($this);
         }
+
+        return $this;
+    }
+
+    public function getSeat(): ?Seat
+    {
+        return $this->seat;
+    }
+
+    public function setSeat(?Seat $seat): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($seat === null && $this->seat !== null) {
+            $this->seat->setUser(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($seat !== null && $seat->getUser() !== $this) {
+            $seat->setUser($this);
+        }
+
+        $this->seat = $seat;
 
         return $this;
     }
